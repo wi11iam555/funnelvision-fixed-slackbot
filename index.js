@@ -163,7 +163,7 @@ app.event('app_mention', async ({ event, say }) => {
 
       const summary = `
 Team target: €\${ctx.target.toLocaleString()}
-Open pipeline (`${ctx.timeframe}`): €\${stats.pipelineValue.toLocaleString()}
+const message = `Open pipeline (${ctx.timeframe}): €${stats.pipelineValue.toLocaleString()}`;
 Coverage ratio: \${stats.coverageRatio.toFixed(2)}x
 Total open deals: \${stats.dealCount}
 `;
