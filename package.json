@@ -8,6 +8,7 @@
   "dependencies": {
     "@slack/bolt": "^3.12.2",
     "dotenv": "^16.0.3",
-    "openai": "^4.25.0"
+    "openai": "^4.25.0",
+    "@hubspot/api-client": "^11.2.0"
   }
 }
