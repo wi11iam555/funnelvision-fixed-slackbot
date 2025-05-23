@@ -12,6 +12,15 @@ const app = new App({
   signingSecret: process.env.SLACK_SIGNING_SECRET
 });
 
+// 🎯 Only count these as "open" stages
+const OPEN_STAGE_IDS = [
+  "665585897", // Lead
+  "947645674", // Discovery
+  "947645675", // Demo
+  "751368910", // Solution Confirmation
+  "691456745"  // Negotiation
+];
+
 // 🧱 Handler: Fetch deals stuck for over 30 days
 async function fetchStuckDeals() {
   const hs = new hubspot.Client({ accessToken: process.env.HUBSPOT_API_KEY });
@@ -22,8 +31,7 @@ async function fetchStuckDeals() {
 
   const filterGroup = {
     filters: [
-      { propertyName: 'dealstage', operator: 'NEQ', value: 'closedwon' },
-      { propertyName: 'dealstage', operator: 'NEQ', value: 'closedlost' },
+      { propertyName: 'dealstage', operator: 'IN', values: OPEN_STAGE_IDS },
       { propertyName: 'hs_lastmodifieddate', operator: 'LT', value: timestampCutoff }
     ]
   };
@@ -43,15 +51,14 @@ async function fetchStuckDeals() {
 async function getPipelineCoverage({ target = 500000 }) {
   const hs = new hubspot.Client({ accessToken: process.env.HUBSPOT_API_KEY });
 
-  const filter = {
+  const filterGroup = {
     filters: [
-      { propertyName: 'dealstage', operator: 'NEQ', value: 'closedwon' },
-      { propertyName: 'dealstage', operator: 'NEQ', value: 'closedlost' }
+      { propertyName: 'dealstage', operator: 'IN', values: OPEN_STAGE_IDS }
     ]
   };
 
   const request = {
-    filterGroups: [filter],
+    filterGroups: [filterGroup],
     properties: ['amount', 'dealstage'],
     limit: 100
   };
@@ -121,7 +128,7 @@ Use only the data provided. Be crisp and structured.
     const deals = await fetchStuckDeals();
 
     const formatted = deals.map(d => {
-      return `• "${d.properties.dealname}" — Stage: ${d.properties.dealstage}, Amount: ${d.properties.amount}, Last updated: ${d.properties.hs_lastmodifieddate}`;
+      return `• "${d.properties.dealname}" — Stage: ${d.properties.dealstage}, Amount: €${d.properties.amount}, Last updated: ${d.properties.hs_lastmodifieddate}`;
     }).join('\n');
 
     const response = await openai.chat.completions.create({
