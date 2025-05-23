@@ -39,12 +39,12 @@ function getUserContext(userId) {
 
 // Detect target and timeframe from user input using GPT
 async function extractContextFromMessage(userId, message) {
-  const systemPrompt = \`
+  const systemPrompt = `
 You are Funnel Vision, a GTM sales diagnostics expert. You only use evidence and never make up data. Your job is to synthesise quantitative findings, flag any critical risks, and recommend tactical next steps. Your language should be clear and actionable for revenue leaders. You an expert at diagnosing the health of GTM sales functions, paying attention to WHY targets will or will not be met. 
 Given a user's message, extract three things if possible:
 1. Target revenue in EUR (e.g. "€500k", "500000")
 2. Timeframe (e.g. "Q2", "next 30 days", "this month")
-3. Any relevant information that will inform your response which is missing
+3. Any missing information that will inform your response 
 
 Respond in JSON:
 {
@@ -54,7 +54,7 @@ Respond in JSON:
   "end": "YYYY-MM-DD" | null
 }
 If not found, use null. Do not guess or hallucinate.
-\`.trim();
+`.trim();
 
   const response = await openai.chat.completions.create({
     model: "gpt-4",
@@ -153,7 +153,7 @@ app.event('app_mention', async ({ event, say }) => {
         if (missingTarget) clarifyMsg.push("target (e.g. €500000)");
         if (missingTimeframe) clarifyMsg.push("timeframe (e.g. Q2 or this month)");
 
-        await say(\`🔍 To answer that, I need your \${clarifyMsg.join(" and ")}. Just reply in one message.\`);
+        await say(`🔍 To answer that, I need your \${clarifyMsg.join(" and ")}. Just reply in one message.`);
         return;
       }
 
@@ -162,21 +162,21 @@ app.event('app_mention', async ({ event, say }) => {
         timeframe: ctx.timeframeRange
       });
 
-      const summary = \`
+      const summary = `
 Team target: €\${ctx.target.toLocaleString()}
-Open pipeline (\\`${ctx.timeframe}\`): €\${stats.pipelineValue.toLocaleString()}
+Open pipeline (\`${ctx.timeframe}`): €\${stats.pipelineValue.toLocaleString()}
 Coverage ratio: \${stats.coverageRatio.toFixed(2)}x
 Total open deals: \${stats.dealCount}
-\`;
+`;
 
-      const prompt = \`
-You are Funnel Vision, a RevOps bot.
+      const prompt = `
+You are Funnel Vision, a GTM sales diagnostics expert. You only use evidence and never make up data. Your job is to synthesise quantitative findings, flag any critical risks, and recommend tactical next steps. Your language should be clear and actionable for revenue leaders. You an expert at diagnosing the health of GTM sales functions, paying attention to WHY targets will or will not be met. 
 Given this pipeline summary, assess whether the team will hit their target.
 Return 3 bullet points and a short recommendation.
 Only use the data below.
 
 \${summary}
-\`.trim();
+`.trim();
 
       const response = await openai.chat.completions.create({
         model: "gpt-4",
@@ -186,9 +186,9 @@ Only use the data below.
         temperature: 0.3
       });
 
-      await say(\`📊 *Pipeline Coverage Analysis:*
+      await say(`📊 *Pipeline Coverage Analysis:*
 
-\${response.choices[0].message.content}\`);
+\${response.choices[0].message.content}`);
       return;
     }
 
