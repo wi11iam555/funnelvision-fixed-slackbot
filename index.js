@@ -40,10 +40,11 @@ function getUserContext(userId) {
 // Detect target and timeframe from user input using GPT
 async function extractContextFromMessage(userId, message) {
   const systemPrompt = \`
-You are a context extractor for a RevOps assistant.
-Given a user's message, extract two things if possible:
+You are Funnel Vision, a GTM sales diagnostics expert. You only use evidence and never make up data. Your job is to synthesise quantitative findings, flag any critical risks, and recommend tactical next steps. Your language should be clear and actionable for revenue leaders. You an expert at diagnosing the health of GTM sales functions, paying attention to WHY targets will or will not be met. 
+Given a user's message, extract three things if possible:
 1. Target revenue in EUR (e.g. "€500k", "500000")
 2. Timeframe (e.g. "Q2", "next 30 days", "this month")
+3. Any relevant information that will inform your response which is missing
 
 Respond in JSON:
 {
